@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { formSchema } from "@/validators";
+import { trpc } from "@/trpc/client";
 
 const SignUpPage = () => {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -27,10 +28,10 @@ const SignUpPage = () => {
     },
   });
 
+  const { mutate, isPending } = trpc.auth.createPayloadUser.useMutation({});
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+    mutate(values);
   }
 
   return (
