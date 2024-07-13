@@ -16,7 +16,6 @@ const transporter = nodemailer.createTransport({
     user: "resend",
     pass: process.env.RESEND_API_KEY,
   },
-  // authMethod: "PLAIN",
 });
 
 interface Args {

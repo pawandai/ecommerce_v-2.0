@@ -1,6 +1,6 @@
 "use client";
 
-import { z } from "zod";
+import { z, ZodError } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -18,8 +18,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { formSchema } from "@/validators";
 import { trpc } from "@/trpc/client";
+import { useRouter } from "next/navigation";
 
 const SignUpPage = () => {
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -28,7 +31,24 @@ const SignUpPage = () => {
     },
   });
 
-  const { mutate, isPending } = trpc.auth.createPayloadUser.useMutation({});
+  const { mutate, isPending } = trpc.auth.createPayloadUser.useMutation({
+    onError: (error) => {
+      if (error.data?.code === "CONFLICT") {
+        console.log("This Email is already in use");
+        return;
+      }
+
+      if (error instanceof ZodError) {
+        console.log(error.issues[0].message);
+        return;
+      }
+      console.log("Something went wrong. Please try again later.");
+    },
+    onSuccess: ({ sentToEmail }) => {
+      console.log(`Verification Email sent to ${sentToEmail}`);
+      router.push("/verifyEmail?to=" + sentToEmail);
+    },
+  });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     mutate(values);
@@ -90,7 +110,7 @@ const SignUpPage = () => {
           type="submit"
           className="w-full border-0 rounded-lg outline-none cursor-pointer"
         >
-          <span>Sign In</span>
+          {isPending ? "Signing Up..." : "Sign Up"}
         </Button>
 
         <div className="w-full flex items-center justify-center gap-8 text-[#8b8e98]">

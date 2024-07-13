@@ -1,11 +1,11 @@
 import { CollectionConfig } from "payload/types";
 
-export const Users: CollectionConfig = {
+export const User: CollectionConfig = {
   slug: "users",
   auth: {
     verify: {
       generateEmailHTML: ({ token }) => {
-        return `<p>Click the link below to verify your email address</p>`;
+        return `<a href='${process.env.NEXT_PUBLIC_SERVER_URL}/verifyEmail?token=${token}'>Click the link below to verify your email address</a>`;
       },
     },
   },
