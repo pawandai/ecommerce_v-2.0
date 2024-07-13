@@ -1,10 +1,17 @@
 "use client";
 
+import Link from "next/link";
 import { z, ZodError } from "zod";
+import { ArrowRight } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import styles from "./signup.module.css";
+import { trpc } from "@/trpc/client";
+import styles from "./signin.module.css";
+import { formSchema } from "@/validators";
+import { Input } from "@/components/ui/input";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { AppleIcon, GoogleIcon, MailIcon, PasswordLock } from "@/utils/icons";
 import {
   Form,
@@ -14,16 +21,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { formSchema } from "@/validators";
-import { trpc } from "@/trpc/client";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 const SignUpPage = () => {
+  const searchParams = useSearchParams();
   const router = useRouter();
+  const isSeller = searchParams.get("as") === "seller";
+  const origin = searchParams.get("origin");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -33,29 +36,34 @@ const SignUpPage = () => {
     },
   });
 
-  const { mutate: signUp, isPending } = trpc.auth.createPayloadUser.useMutation(
-    {
-      onError: (error) => {
-        if (error.data?.code === "CONFLICT") {
-          console.log("This Email is already in use");
-          return;
-        }
+  const { mutate: signIn, isPending } = trpc.auth.signIn.useMutation({
+    onSuccess: () => {
+      console.log("Sign in successful");
 
-        if (error instanceof ZodError) {
-          console.log(error.issues[0].message);
-          return;
-        }
-        console.log("Something went wrong. Please try again later.");
-      },
-      onSuccess: ({ sentToEmail }) => {
-        console.log(`Verification Email sent to ${sentToEmail}`);
-        router.push("/verifyEmail?to=" + sentToEmail);
-      },
-    }
-  );
+      router.refresh();
+
+      if (origin) {
+        router.push(`/${origin}`);
+        return;
+      }
+
+      if (isSeller) {
+        router.push("/dashboard");
+        return;
+      }
+
+      router.push("/");
+    },
+    onError: (error) => {
+      if (error.data?.code === "UNAUTHORIZED") {
+        console.log("Invalid email or password");
+        return;
+      }
+    },
+  });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    signUp(values);
+    signIn(values);
   }
 
   return (
@@ -65,10 +73,10 @@ const SignUpPage = () => {
         className="flex flex-col items-center justify-center gap-4 w-[95vw] sm:max-w-[500px] px-[40px] pt-[50px] pb-[20px] shadow-custom rounded-xl mx-auto"
       >
         <div className="flex items-center justify-center">
-          <h2 className="m-0 text-2xl font-bold">Create an Account</h2>
+          <h2 className="m-0 text-2xl font-bold">Welcome Back!</h2>
         </div>
-        <Link className={buttonVariants({ variant: "link" })} href={"/signin"}>
-          Already have an account? Sign in <ArrowRight className="h-4 w-4" />
+        <Link className={buttonVariants({ variant: "link" })} href={"/signup"}>
+          Don&apos;t have an account? Sign Up <ArrowRight className="h-4 w-4" />
         </Link>
         <FormField
           control={form.control}
@@ -114,9 +122,10 @@ const SignUpPage = () => {
         <Button
           title="Sign In"
           type="submit"
+          disabled={isPending}
           className="w-full border-0 rounded-lg outline-none cursor-pointer"
         >
-          {isPending ? "Signing Up..." : "Sign Up"}
+          {isPending ? "Signing In..." : "Sign In"}
         </Button>
 
         <div className="w-full flex items-center justify-center gap-8 text-[#8b8e98]">
@@ -126,12 +135,31 @@ const SignUpPage = () => {
         </div>
         <button className={styles.signin_ggl}>
           <GoogleIcon />
-          <span>Sign Un with Google</span>
+          <span>Sign In with Google</span>
         </button>
         <button className={styles.signin_apl}>
           <AppleIcon />
-          <span>Sign Un with Apple</span>
+          <span>Sign In with Apple</span>
         </button>
+        {isSeller ? (
+          <Button
+            variant={"link"}
+            disabled={isPending}
+            type="button"
+            onClick={() => router.replace("/signin", undefined)}
+          >
+            Continue as customer <ArrowRight className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button
+            variant={"link"}
+            type="button"
+            disabled={isPending}
+            onClick={() => router.push("?as=seller")}
+          >
+            Continue as seller <ArrowRight className="h-4 w-4" />
+          </Button>
+        )}
         <p className="text-muted-foreground underline text-sm">
           Terms of use &amp; Conditions
         </p>
