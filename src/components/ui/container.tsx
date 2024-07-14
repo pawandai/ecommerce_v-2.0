@@ -11,7 +11,7 @@ const Container = ({
   return (
     <div
       className={cn(
-        "w-full max-w-screen-xl px-2.5 md:px-20 mx-auto min-h-[calc(100vh-8rem)]",
+        "w-full flex flex-col max-w-screen-xl px-2.5 md:px-20 mx-auto min-h-[calc(100vh-8rem)]",
         className
       )}
     >

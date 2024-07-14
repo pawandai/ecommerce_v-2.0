@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Urbanist } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import Provider from "@/components/Provider";
+import Container from "@/components/ui/container";
 
 const urbanist = Urbanist({
   subsets: ["latin"],
@@ -21,11 +22,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${urbanist.className} relative h-full antialiased`}>
-        <main className="min-h-screen flex flex-col relative">
+        <Container>
           <Provider>
             <section className="flex-grow flex-1">{children}</section>
           </Provider>
-        </main>
+        </Container>
       </body>
     </html>
   );

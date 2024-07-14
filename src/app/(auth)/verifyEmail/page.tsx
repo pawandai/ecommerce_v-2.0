@@ -1,5 +1,5 @@
 import VerifyEmail from "@/components/auth/VerifyEmail";
-import Container from "@/components/shared/Container";
+import Container from "@/components/ui/container";
 
 interface PageProps {
   searchParams: {
@@ -12,7 +12,7 @@ const VerifyEmailPage = ({ searchParams }: PageProps) => {
   const toEmail = searchParams.to;
 
   return (
-    <Container className="flex flex-col items-center">
+    <Container className="items-center">
       {token && typeof token === "string" ? (
         <div className="grid grid-cols-6">
           <VerifyEmail token={token} />
