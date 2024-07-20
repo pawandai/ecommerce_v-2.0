@@ -4,10 +4,12 @@ import { slateEditor } from "@payloadcms/richtext-slate";
 import { webpackBundler } from "@payloadcms/bundler-webpack";
 import path from "path";
 import { User } from "./models/Users";
+import { Products } from "./models/Products/Products";
+import { Media } from "./models/Media";
 
 export default buildConfig({
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || "",
-  collections: [User],
+  collections: [User, Products, Media],
   routes: {
     admin: "/dashboard",
   },

@@ -3,6 +3,7 @@ import { Urbanist } from "next/font/google";
 import "../globals.css";
 import Provider from "@/components/Provider";
 import Container from "@/components/ui/container";
+import Header from "@/components/shared/Header";
 
 const urbanist = Urbanist({
   subsets: ["latin"],
@@ -22,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${urbanist.className} relative h-full antialiased`}>
+        <Header />
         <Container>
           <Provider>
             <section className="flex-grow flex-1">{children}</section>
