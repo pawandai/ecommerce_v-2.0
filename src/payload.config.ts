@@ -6,10 +6,12 @@ import path from "path";
 import { User } from "./models/Users";
 import { Products } from "./models/Products/Products";
 import { Media } from "./models/Media";
+import { ProductFiles } from "./models/ProductFile";
+import { Orders } from "./models/Orders";
 
 export default buildConfig({
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || "",
-  collections: [User, Products, Media],
+  collections: [User, Products, Media, ProductFiles, Orders],
   routes: {
     admin: "/dashboard",
   },
