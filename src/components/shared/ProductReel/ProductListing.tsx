@@ -1,8 +1,11 @@
 "use client";
 
+import { PRODUCT_CATEGORIES } from "@/config";
+import { formatPrice } from "@/lib/utils";
 import { Product } from "@/payloadTypes";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import ImageSlider from "../ImageSlider";
 
 interface ProductListingProps {
   product: Product | null;
@@ -22,11 +25,21 @@ const ProductListing = ({ product, index }: ProductListingProps) => {
 
   if (!product || !isVisible) return <ProductPlaceholder />;
 
-  if (isVisible && product) {
+  const label = PRODUCT_CATEGORIES.find(
+    ({ value }) => value === product.category
+  )?.label;
+
+  const imageUrls = product.images
+    .map(({ image }) => (typeof image === "string" ? image : image.url))
+    .filter(Boolean) as string[];
+
+  if (product && isVisible) {
     return (
       <Link href={`/product/${product.id}`}>
+        <ImageSlider urls={imageUrls} />
         <h3>{product.name}</h3>
-        <p>{product.category}</p>
+        <p>{label}</p>
+        <p>{formatPrice(product.price)}</p>
       </Link>
     );
   }

@@ -32,6 +32,7 @@ const ProductReel = (props: ProductReelProps) => {
   const products = queryResults?.pages.flatMap((page) => page.items);
 
   let map: (Product | null)[] = [];
+
   if (products && products.length) {
     map = products;
   } else if (isLoading) {
@@ -50,7 +51,7 @@ const ProductReel = (props: ProductReelProps) => {
           </Link>
         ) : null}
       </div>
-      <div>
+      <div className="max-w-[360px]">
         {map.map((product, i) => (
           <ProductListing key={i} index={i} product={product} />
         ))}
