@@ -1,9 +1,9 @@
+import AddToCartButton from "@/components/shared/AddToCartButton";
 import ImageSlider from "@/components/shared/ImageSlider";
 import ProductReel from "@/components/shared/ProductReel";
 import Container from "@/components/ui/container";
 import { PRODUCT_CATEGORIES } from "@/config";
 import { formatPrice } from "@/lib/utils";
-import { Products } from "@/models/Products/Products";
 import { getPayloadClient } from "@/payload";
 import { Check, Shield } from "lucide-react";
 import Link from "next/link";
@@ -83,7 +83,7 @@ const ProductDetails = async ({ params }: PageProps) => {
       </div>
 
       <div>
-        {/* TODO: Add to Cart Button */}
+        <AddToCartButton product={product} />
         <div></div>
         <div>
           <Shield aria-hidden="true" className="h-5 w-5" />
